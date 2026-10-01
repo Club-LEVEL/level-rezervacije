@@ -261,6 +261,11 @@
         <label>Broj Mobitela</label>
         <input type="tel" id="input-phone" placeholder="09X XXX XXXX">
       </div>
+      <div class="field">
+  <label>Datum rezervacije</label>
+  <input type="date" id="input-date">
+</div>
+
 
       <div class="field">
         <label>Vrijeme Dolaska</label>
@@ -346,7 +351,14 @@ const SUPABASE_URL = "https://ccsscrymkdordybfiibi.supabase.co";
 
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc3Njcnlta2RvcmR5YmZpaWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NDc5NDYsImV4cCI6MjEwNjQyMzk0Nn0.8-5MoonAmrnzW0IhFivheFmGo1LGLKb4EL5TXZkrHm4";
 
-    let supabase = (SUPABASE_URL && SUPABASE_KEY) ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+    const supabaseClient =
+  (SUPABASE_URL && SUPABASE_KEY)
+  ? window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    )
+  : null;
+
 
     function renderMap() {
       const layer = document.getElementById('tables-layer');
@@ -478,12 +490,6 @@ if (supabase) {
       window.open(
   `https://wa.me/385993694369?text=${message}`,
   '_blank');
-  <div class="field">
-  <label>Datum rezervacije</label>
-  <input type="date" id="input-date">
-</div>
-
-
     }
 
     // Pokretanje pri učitavanju
@@ -511,7 +517,8 @@ if (supabase) {
     reservedTables.add(item.table_id);
   });
 
-  renderMap();
+ loadReservations();
+
 }
 
 if (supabase) {
