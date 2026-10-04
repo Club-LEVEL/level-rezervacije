@@ -2,149 +2,280 @@
 <html lang="hr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>LEVEL Caffe & Night Bar - Rezervacije</title>
-  <!-- Supabase JS Klijent za Realtime sinkronizaciju -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
-      --bg-main: #0a0a0c;
-      --card-bg: #141419;
-      --accent-cyan: #00e5ff;
-      --accent-teal: #0d9488;
-      --color-free: #10b981;
-      --color-reserved: #ef4444;
-      --color-selected: #f59e0b;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
+      --bg: #0a0a0c;
+      --card: #141419;
+      --border: #2a2a35;
+      --cyan: #00e5ff;
+      --teal: #0d9488;
+      --free: #10b981;
+      --reserved: #ef4444;
+      --selected: #f59e0b;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
     }
 
     * {
       box-sizing: border-box;
-      user-select: none;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-main);
+      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
       padding: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
     }
 
     .header {
-      text-align: center;
       margin-bottom: 12px;
+      text-align: center;
     }
 
     .header h1 {
-      margin: 0;
-      font-size: 22px;
+      margin: 0 0 6px;
+      color: var(--cyan);
+      font-size: 24px;
       letter-spacing: 2px;
-      color: var(--accent-cyan);
       text-transform: uppercase;
     }
 
     .header p {
-      margin: 4px 0 0 0;
+      margin: 0;
+      color: var(--muted);
       font-size: 13px;
-      color: var(--text-muted);
     }
 
     .legend {
       display: flex;
-      gap: 16px;
-      margin-bottom: 14px;
-      background: var(--card-bg);
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: 1px solid #222;
-      font-size: 13px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
       gap: 6px;
+      font-size: 13px;
     }
 
     .dot {
       width: 12px;
       height: 12px;
+      flex: 0 0 auto;
       border-radius: 50%;
     }
-    .dot.free { background-color: var(--color-free); }
-    .dot.reserved { background-color: var(--color-reserved); }
-    .dot.selected { background-color: var(--color-selected); }
+
+    .dot.free {
+      background: var(--free);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    }
+
+    .dot.reserved {
+      background: var(--reserved);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    }
+
+    .dot.selected {
+      background: var(--selected);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+    }
 
     .map-wrapper {
+      display: flex;
       width: 100%;
-      max-width: 480px;
-      background: #111115;
-      border: 2px solid #26262e;
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      height: calc(100dvh - 170px);
+      min-height: 500px;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 8px;
+      background:
+        radial-gradient(circle at center, rgba(0, 229, 255, 0.08), transparent 60%),
+        linear-gradient(180deg, #17171e 0%, #111115 100%);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.45),
+        inset 0 0 40px rgba(0, 229, 255, 0.04);
     }
 
-    svg {
-      width: 100%;
-      height: auto;
+    #club-svg {
       display: block;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
     }
 
-    .table-node {
-      cursor: pointer;
-      transition: transform 0.15s ease, filter 0.15s ease;
-    }
-    .table-node:hover {
-      filter: brightness(1.25);
-    }
-    
-    .status-available { fill: var(--color-free); stroke: #ffffff; stroke-width: 1.5; }
-    .status-reserved { fill: var(--color-reserved); stroke: #7f1d1d; stroke-width: 1.5; cursor: not-allowed; }
-    .status-selected { fill: var(--color-selected); stroke: #ffffff; stroke-width: 2.5; }
-
-    .table-label {
+    .club-label {
       fill: #ffffff;
       font-size: 11px;
       font-weight: 700;
       text-anchor: middle;
-      dominant-baseline: central;
+      dominant-baseline: middle;
       pointer-events: none;
+      user-select: none;
     }
 
-    /* Modal za unose podataka */
-    .modal-overlay {
-      display: none;
+    .zone-label {
+      fill: #f3f4f6;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .table-node {
+      cursor: pointer;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .table-node:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    }
+
+    .table-node.is-reserved {
+      cursor: not-allowed;
+    }
+
+    .status-free {
+      fill: var(--free);
+      stroke: #ffffff;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+    }
+
+    .status-reserved {
+      fill: var(--reserved);
+      stroke: #7f1d1d;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.35));
+    }
+
+    .status-selected {
+      fill: var(--selected);
+      stroke: #ffffff;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.5));
+      animation: pulseSelected 1.5s infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .dj-zone {
+      fill: #1c1c24;
+      stroke: #4b5563;
+      stroke-width: 2;
+    }
+
+    .vip-zone {
+      fill: #083b32;
+      stroke: #14b8a6;
+      stroke-width: 2.5;
+      filter: drop-shadow(0 0 15px rgba(20, 184, 166, 0.25));
+    }
+
+    .bar-zone {
+      fill: #241810;
+      stroke: #f59e0b;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.2));
+    }
+
+    .wc-zone {
+      fill: #181820;
+      stroke: #374151;
+      stroke-width: 2;
+    }
+
+    .entrance-zone {
+      fill: var(--teal);
+      filter: drop-shadow(0 0 12px rgba(13, 148, 136, 0.4));
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(4px);
-      justify-content: center;
-      align-items: center;
       z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
       padding: 16px;
+      background: rgba(0, 0, 0, 0.84);
+      backdrop-filter: blur(4px);
     }
 
-    .modal-card {
-      background: var(--card-bg);
-      border: 1px solid #2a2a35;
-      border-radius: 16px;
+    .modal.is-open {
+      display: flex;
+    }
+
+    .modal-content {
       width: 100%;
-      max-width: 380px;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+      max-width: 400px;
+      max-height: calc(100dvh - 32px);
+      overflow-y: auto;
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
     }
 
-    .modal-card h3 {
-      margin: 0 0 16px 0;
-      color: var(--accent-cyan);
-      font-size: 18px;
+    .modal h2 {
+      margin: 0 0 18px;
+      color: var(--cyan);
+      font-size: 20px;
     }
 
     .field {
@@ -153,26 +284,30 @@
 
     .field label {
       display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
       font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
+      letter-spacing: 0.4px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
-    .field input, .field select {
+    .field input,
+    .field select {
       width: 100%;
+      min-height: 46px;
       padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #333340;
-      background: #0a0a0d;
-      color: #fff;
-      font-size: 14px;
       outline: none;
+      background: #0f0f14;
+      color: #ffffff;
+      border: 1px solid #333344;
+      border-radius: 10px;
+      font-size: 16px;
     }
 
-    .field input:focus, .field select:focus {
-      border-color: var(--accent-cyan);
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.12);
     }
 
     .actions {
@@ -182,94 +317,200 @@
     }
 
     .btn {
-      flex: 1;
+      min-height: 48px;
+      border: 0;
+      border-radius: 10px;
       padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      font-weight: 700;
+      transition: filter 0.2s ease, opacity 0.2s ease;
     }
 
-    .btn-confirm { background: var(--color-free); color: #fff; }
-    .btn-cancel { background: #2a2a35; color: var(--text-muted); }
-    .btn-wa { background: #25D366; color: #fff; width: 100%; margin-top: 10px; }
+    .btn:hover {
+      filter: brightness(1.08);
+    }
 
-    .btn-confirm:hover { background: #059669; }
-    .btn-cancel:hover { background: #3f3f50; }
+    .btn:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .btn-save {
+      flex: 1;
+      background: var(--free);
+      color: #ffffff;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: #292936;
+      color: #ffffff;
+    }
+
+    .btn-whatsapp {
+      width: 100%;
+      margin-top: 10px;
+      background: #25d366;
+      color: #ffffff;
+    }
+
+    @keyframes pulseSelected {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 8px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .legend {
+        gap: 8px;
+      }
+
+      .legend-item {
+        font-size: 12px;
+      }
+
+      .map-wrapper {
+        height: calc(100dvh - 145px);
+        min-height: 420px;
+        border-radius: 14px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 18px;
+        letter-spacing: 1px;
+      }
+
+      .legend {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 8px 10px;
+      }
+
+      .legend-item {
+        justify-content: center;
+        font-size: 11px;
+      }
+
+      .legend-item:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .map-wrapper {
+        height: calc(100dvh - 142px);
+        min-height: 400px;
+        padding: 4px;
+      }
+
+      .footer-note {
+        font-size: 11px;
+      }
+    }
+
+    @media (hover: none) {
+      .table-node:hover {
+        transform: none;
+        filter: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <main class="container">
+    <header class="header">
+      <h1>LEVEL Caffe &amp; Night Bar</h1>
+      <p>Odaberite slobodan stol na tlocrtu za rezervaciju</p>
+    </header>
 
-  <div class="header">
-    <h1>LEVEL Caffe & Night Bar</h1>
-    <p>Odaberite slobodan stol na tlocrtu za rezervaciju</p>
-  </div>
+    <section class="legend" aria-label="Legenda statusa stolova">
+      <div class="legend-item"><span class="dot free"></span><span>Slobodno</span></div>
+      <div class="legend-item"><span class="dot reserved"></span><span>Rezervirano</span></div>
+      <div class="legend-item"><span class="dot selected"></span><span>Odabrano</span></div>
+    </section>
 
-  <div class="legend">
-    <div class="legend-item"><div class="dot free"></div> Slobodno</div>
-    <div class="legend-item"><div class="dot reserved"></div> Zauzeto</div>
-    <div class="legend-item"><div class="dot selected"></div> Odabrano</div>
-  </div>
+    <section class="map-wrapper" aria-label="Tlocrt lokala">
+      <svg id="club-svg" viewBox="0 0 500 880" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="map-title map-description">
+        <title id="map-title">Tlocrt LEVEL Caffe &amp; Night Bara</title>
+        <desc id="map-description">Interaktivni prikaz 37 stolova i zona lokala.</desc>
 
-  <div class="map-wrapper">
-    <svg viewBox="0 0 500 880" id="club-svg">
-      <!-- Zidovi i okvir objekta -->
-      <rect x="10" y="10" width="480" height="860" fill="none" stroke="#2a2a35" stroke-width="4" rx="12"/>
+        <rect x="10" y="10" width="480" height="860" fill="none" stroke="#2a2a35" stroke-width="4" rx="12"/>
 
-      <!-- DJ PULT -->
-      <rect x="30" y="130" width="110" height="45" fill="#1c1c24" stroke="#333345" rx="6"/>
-      <text x="85" y="152.5" fill="#6b7280" font-size="12" font-weight="bold" text-anchor="middle">DJ PULT</text>
+        <rect class="dj-zone" x="30" y="130" width="110" height="45" rx="6"/>
+        <text x="85" y="153" class="zone-label">DJ PULT</text>
 
-      <!-- WC -->
-      <rect x="380" y="30" width="90" height="70" fill="#181820" stroke="#2a2a35" rx="6"/>
-      <text x="425" y="65" fill="#4b5563" font-size="13" font-weight="bold" text-anchor="middle">WC</text>
+        <rect class="wc-zone" x="380" y="30" width="90" height="70" rx="6"/>
+        <text x="425" y="65" class="zone-label">WC</text>
 
-      <!-- GORNJI ŠANK -->
-      <rect x="310" y="200" width="60" height="230" fill="#241810" stroke="#b45309" stroke-width="2" rx="6"/>
-      <text x="340" y="315" fill="#f59e0b" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(-90 340 315)">GORNJI ŠANK</text>
+        <rect class="bar-zone" x="310" y="200" width="60" height="230" rx="6"/>
+        <text x="340" y="315" class="zone-label" transform="rotate(-90 340 315)">GORNJI ŠANK</text>
 
-      <!-- DONJI ŠANK -->
-      <rect x="400" y="580" width="60" height="200" fill="#241810" stroke="#b45309" stroke-width="2" rx="6"/>
-      <text x="430" y="680" fill="#f59e0b" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(-90 430 680)">DONJI ŠANK</text>
+        <rect class="bar-zone" x="400" y="580" width="60" height="200" rx="6"/>
+        <text x="430" y="680" class="zone-label" transform="rotate(-90 430 680)">DONJI ŠANK</text>
 
-      <!-- VIP ZONA -->
-      <rect x="300" y="470" width="160" height="100" fill="#062e26" stroke="#0d9488" stroke-width="2" rx="8"/>
-      <text x="330" y="525" fill="#14b8a6" font-size="15" font-weight="bold" text-anchor="middle">VIP</text>
+        <rect class="vip-zone" x="300" y="470" width="160" height="100" rx="8"/>
+        <text x="330" y="522" class="zone-label">VIP</text>
 
-      <!-- ULAZ / LOGO BOJE -->
-      <rect x="210" y="815" width="80" height="45" fill="#0d9488" rx="4"/>
-      <text x="250" y="842" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">LEVEL</text>
+        <rect class="entrance-zone" x="210" y="815" width="80" height="45" rx="4"/>
+        <text x="250" y="838" class="zone-label">LEVEL</text>
 
-      <!-- Dinamički sloj u koji JS crta svih 37 stolova -->
-      <g id="tables-layer"></g>
-    </svg>
-  </div>
+        <g id="tables-layer"></g>
+      </svg>
+    </section>
 
-  <!-- Modalni dijalog -->
-  <div class="modal-overlay" id="modal">
-    <div class="modal-card">
-      <h3 id="modal-title">Rezervacija Stola</h3>
-      
+    <div class="footer-note">LEVEL Caffe &amp; Night Bar © 2026</div>
+  </main>
+
+  <div id="reservationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <h2 id="modalTitle">Rezervacija stola</h2>
+
       <div class="field">
-        <label>Ime i Prezime</label>
-        <input type="text" id="input-name" placeholder="npr. Marko Horvat">
+        <label for="reservationName">Ime i prezime</label>
+        <input type="text" id="reservationName" placeholder="npr. Marko Horvat" autocomplete="name" maxlength="80">
       </div>
-      
+
       <div class="field">
-        <label>Broj Mobitela</label>
-        <input type="tel" id="input-phone" placeholder="09X XXX XXXX">
+        <label for="reservationPhone">Broj mobitela</label>
+        <input type="tel" id="reservationPhone" placeholder="+385 99 369 4369" autocomplete="tel" inputmode="tel" maxlength="20">
       </div>
-      <div class="field">
-  <label>Datum rezervacije</label>
-  <input type="date" id="input-date">
-</div>
-
 
       <div class="field">
-        <label>Vrijeme Dolaska</label>
-        <select id="input-time">
+        <label for="reservationDate">Datum rezervacije</label>
+        <input type="date" id="reservationDate">
+      </div>
+
+      <div class="field">
+        <label for="reservationTime">Vrijeme dolaska</label>
+        <select id="reservationTime">
           <option value="23:30">23:30 h</option>
           <option value="00:00" selected>00:00 h</option>
           <option value="00:30">00:30 h</option>
@@ -277,8 +518,8 @@
       </div>
 
       <div class="field">
-        <label>Broj Osoba (Maksimalno 6)</label>
-        <select id="input-count">
+        <label for="reservationCount">Broj osoba</label>
+        <select id="reservationCount">
           <option value="1">1 osoba</option>
           <option value="2">2 osobe</option>
           <option value="3">3 osobe</option>
@@ -289,258 +530,344 @@
       </div>
 
       <div class="actions">
-        <button class="btn btn-confirm" onclick="saveReservation()">Potvrdi Rezervaciju</button>
-        <button class="btn btn-cancel" onclick="closeModal()">Odustani</button>
+        <button id="saveButton" class="btn btn-save" type="button">Potvrdi rezervaciju</button>
+        <button id="cancelButton" class="btn btn-cancel" type="button">Odustani</button>
       </div>
-      
-      <button class="btn btn-wa" onclick="sendWhatsApp()">Pošalji na WhatsApp</button>
+
+      <button id="whatsAppButton" class="btn btn-whatsapp" type="button">Pošalji na WhatsApp</button>
     </div>
   </div>
 
   <script>
-    // Konfiguracija točnih pozicija stolova (1-37) prema tlocrtu
-    const tableCoords = {
-      // VIP separei
-      1: { x: 380, y: 495, shape: 'rect', w: 32, h: 24 },
-      2: { x: 435, y: 520, shape: 'rect', w: 22, h: 36 },
-      3: { x: 380, y: 545, shape: 'rect', w: 32, h: 22 },
-      // Prednji / Donji dio
-      4: { x: 325, y: 650, shape: 'circle', r: 14 },
-      5: { x: 325, y: 785, shape: 'circle', r: 14 },
-      6: { x: 205, y: 785, shape: 'circle', r: 14 },
-      7: { x: 125, y: 785, shape: 'circle', r: 14 },
-      8: { x: 55,  y: 785, shape: 'circle', r: 14 },
-      9: { x: 205, y: 720, shape: 'circle', r: 14 },
-      10: { x: 125, y: 720, shape: 'circle', r: 14 },
-      11: { x: 55,  y: 720, shape: 'circle', r: 14 },
-      12: { x: 205, y: 650, shape: 'circle', r: 14 },
-      13: { x: 85,  y: 615, shape: 'circle', r: 14 },
-      14: { x: 145, y: 615, shape: 'circle', r: 14 },
-      15: { x: 55,  y: 650, shape: 'circle', r: 14 },
-      // Glavni podij
-      16: { x: 75,  y: 540, shape: 'circle', r: 13 },
-      17: { x: 75,  y: 490, shape: 'circle', r: 13 },
-      18: { x: 75,  y: 440, shape: 'circle', r: 13 },
-      19: { x: 75,  y: 390, shape: 'circle', r: 13 },
-      20: { x: 75,  y: 340, shape: 'circle', r: 13 },
-      21: { x: 75,  y: 290, shape: 'circle', r: 13 },
-      22: { x: 75,  y: 240, shape: 'circle', r: 13 },
-      23: { x: 175, y: 240, shape: 'circle', r: 13 },
-      24: { x: 175, y: 290, shape: 'circle', r: 13 },
-      25: { x: 175, y: 340, shape: 'circle', r: 13 },
-      26: { x: 175, y: 390, shape: 'circle', r: 13 },
-      27: { x: 175, y: 440, shape: 'circle', r: 13 },
-      28: { x: 175, y: 490, shape: 'circle', r: 13 },
-      29: { x: 175, y: 540, shape: 'circle', r: 13 },
-      // Gornji dio (DJ / WC)
-      30: { x: 235, y: 190, shape: 'circle', r: 13 },
-      31: { x: 315, y: 170, shape: 'circle', r: 13 },
-      32: { x: 315, y: 110, shape: 'circle', r: 13 },
-      33: { x: 315, y: 65,  shape: 'circle', r: 13 },
-      34: { x: 235, y: 65,  shape: 'circle', r: 13 },
-      35: { x: 235, y: 125, shape: 'circle', r: 13 },
-      36: { x: 155, y: 110, shape: 'circle', r: 13 },
-      37: { x: 155, y: 65,  shape: 'circle', r: 13 }
+    "use strict";
+
+    const SUPABASE_URL = "https://ccsscrymkdordybfiibi.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc3Njcnlta2RvcmR5YmZpaWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NDc5NDYsImV4cCI6MjEwNjQyMzk0Nn0.8-5MoonAmrnzW0IhFivheFmGo1LGLKb4EL5TXZkrHm4";
+    const WHATSAPP_NUMBER = "385993694369";
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let selectedTable = null;
+    let reservedTables = new Set();
+    let isSaving = false;
+
+    const tables = {
+      1: { x: 380, y: 495, shape: "rect", w: 32, h: 24 },
+      2: { x: 435, y: 520, shape: "rect", w: 22, h: 36 },
+      3: { x: 380, y: 545, shape: "rect", w: 32, h: 22 },
+      4: { x: 325, y: 650, shape: "circle", r: 14 },
+      5: { x: 325, y: 785, shape: "circle", r: 14 },
+      6: { x: 205, y: 785, shape: "circle", r: 14 },
+      7: { x: 125, y: 785, shape: "circle", r: 14 },
+      8: { x: 55, y: 785, shape: "circle", r: 14 },
+      9: { x: 205, y: 720, shape: "circle", r: 14 },
+      10: { x: 125, y: 720, shape: "circle", r: 14 },
+      11: { x: 55, y: 720, shape: "circle", r: 14 },
+      12: { x: 205, y: 650, shape: "circle", r: 14 },
+      13: { x: 85, y: 615, shape: "circle", r: 14 },
+      14: { x: 145, y: 615, shape: "circle", r: 14 },
+      15: { x: 55, y: 650, shape: "circle", r: 14 },
+      16: { x: 75, y: 540, shape: "circle", r: 13 },
+      17: { x: 75, y: 490, shape: "circle", r: 13 },
+      18: { x: 75, y: 440, shape: "circle", r: 13 },
+      19: { x: 75, y: 390, shape: "circle", r: 13 },
+      20: { x: 75, y: 340, shape: "circle", r: 13 },
+      21: { x: 75, y: 290, shape: "circle", r: 13 },
+      22: { x: 75, y: 240, shape: "circle", r: 13 },
+      23: { x: 175, y: 240, shape: "circle", r: 13 },
+      24: { x: 175, y: 290, shape: "circle", r: 13 },
+      25: { x: 175, y: 340, shape: "circle", r: 13 },
+      26: { x: 175, y: 390, shape: "circle", r: 13 },
+      27: { x: 175, y: 440, shape: "circle", r: 13 },
+      28: { x: 175, y: 490, shape: "circle", r: 13 },
+      29: { x: 175, y: 540, shape: "circle", r: 13 },
+      30: { x: 235, y: 190, shape: "circle", r: 13 },
+      31: { x: 315, y: 170, shape: "circle", r: 13 },
+      32: { x: 315, y: 110, shape: "circle", r: 13 },
+      33: { x: 315, y: 65, shape: "circle", r: 13 },
+      34: { x: 235, y: 65, shape: "circle", r: 13 },
+      35: { x: 235, y: 125, shape: "circle", r: 13 },
+      36: { x: 155, y: 110, shape: "circle", r: 13 },
+      37: { x: 155, y: 65, shape: "circle", r: 13 }
     };
 
-    let reservedTables = new Set();
-    let selectedTable = null;
+    const modal = document.getElementById("reservationModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const nameInput = document.getElementById("reservationName");
+    const phoneInput = document.getElementById("reservationPhone");
+    const dateInput = document.getElementById("reservationDate");
+    const timeInput = document.getElementById("reservationTime");
+    const countInput = document.getElementById("reservationCount");
+    const saveButton = document.getElementById("saveButton");
+    const cancelButton = document.getElementById("cancelButton");
+    const whatsAppButton = document.getElementById("whatsAppButton");
 
-    // Supabase Klijent (Ako nemate parametre, aplikacija radi lokalno)
-const SUPABASE_URL = "https://ccsscrymkdordybfiibi.supabase.co";
-
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjc3Njcnlta2RvcmR5YmZpaWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NDc5NDYsImV4cCI6MjEwNjQyMzk0Nn0.8-5MoonAmrnzW0IhFivheFmGo1LGLKb4EL5TXZkrHm4";
-
-    const supabaseClient =
-  (SUPABASE_URL && SUPABASE_KEY)
-  ? window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    )
-  : null;
-
-
-    function renderMap() {
-      const layer = document.getElementById('tables-layer');
-      layer.innerHTML = '';
-
-      for (let id = 1; id <= 37; id++) {
-        const item = tableCoords[id];
-        const isReserved = reservedTables.has(id);
-        const isSelected = selectedTable === id;
-
-        let statusClass = 'status-available';
-        if (isReserved) statusClass = 'status-reserved';
-        else if (isSelected) statusClass = 'status-selected';
-
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.setAttribute("class", "table-node");
-        g.onclick = () => handleTableSelect(id);
-
-        if (item.shape === 'rect') {
-          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-          rect.setAttribute("x", item.x);
-          rect.setAttribute("y", item.y);
-          rect.setAttribute("width", item.w);
-          rect.setAttribute("height", item.h);
-          rect.setAttribute("rx", "4");
-          rect.setAttribute("class", statusClass);
-          g.appendChild(rect);
-
-          const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          txt.setAttribute("x", item.x + item.w / 2);
-          txt.setAttribute("y", item.y + item.h / 2);
-          txt.setAttribute("class", "table-label");
-          txt.textContent = id;
-          g.appendChild(txt);
-        } else {
-          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-          circle.setAttribute("cx", item.x);
-          circle.setAttribute("cy", item.y);
-          circle.setAttribute("r", item.r);
-          circle.setAttribute("class", statusClass);
-          g.appendChild(circle);
-
-          const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          txt.setAttribute("x", item.x);
-          txt.setAttribute("y", item.y);
-          txt.setAttribute("class", "table-label");
-          txt.textContent = id;
-          g.appendChild(txt);
-        }
-
-        layer.appendChild(g);
-      }
+    function getLocalISODate() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      return new Date(now.getTime() - offset * 60000).toISOString().split("T")[0];
     }
 
-    function handleTableSelect(id) {
+    function renderTables() {
+      const layer = document.getElementById("tables-layer");
+      layer.innerHTML = "";
+
+      Object.entries(tables).forEach(([idText, table]) => {
+        const id = Number(idText);
+        const isReserved = reservedTables.has(id);
+        const isSelected = selectedTable === id;
+        const statusClass = isReserved
+          ? "status-reserved"
+          : isSelected
+            ? "status-selected"
+            : "status-free";
+
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.setAttribute("class", `table-node${isReserved ? " is-reserved" : ""}`);
+        group.setAttribute("role", "button");
+        group.setAttribute("tabindex", "0");
+        group.setAttribute("aria-label", `Stol ${id}, ${isReserved ? "rezerviran" : "slobodan"}`);
+
+        let centerX;
+        let centerY;
+
+        if (table.shape === "rect") {
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", table.x);
+          rect.setAttribute("y", table.y);
+          rect.setAttribute("width", table.w);
+          rect.setAttribute("height", table.h);
+          rect.setAttribute("rx", "4");
+          rect.setAttribute("class", statusClass);
+          group.appendChild(rect);
+          centerX = table.x + table.w / 2;
+          centerY = table.y + table.h / 2;
+        } else {
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", table.x);
+          circle.setAttribute("cy", table.y);
+          circle.setAttribute("r", table.r);
+          circle.setAttribute("class", statusClass);
+          group.appendChild(circle);
+          centerX = table.x;
+          centerY = table.y;
+        }
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", centerX);
+        label.setAttribute("y", centerY);
+        label.setAttribute("class", "club-label");
+        label.textContent = id;
+        group.appendChild(label);
+
+        const activate = () => selectTable(id);
+        group.addEventListener("click", activate);
+        group.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            activate();
+          }
+        });
+
+        layer.appendChild(group);
+      });
+    }
+
+    function selectTable(id) {
       if (reservedTables.has(id)) {
-        alert(`Stol ${id} je već zauzet/rezerviran!`);
+        alert(`Stol ${id} je već rezerviran.`);
         return;
       }
+
       selectedTable = id;
-      document.getElementById('modal-title').innerText = `Rezervacija Stola #${id}`;
-      document.getElementById('modal').style.display = 'flex';
-      renderMap();
+      modalTitle.textContent = `Rezervacija stola #${id}`;
+      modal.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+      renderTables();
+      setTimeout(() => nameInput.focus(), 0);
     }
 
     function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+      modal.classList.remove("is-open");
+      document.body.style.overflow = "";
       selectedTable = null;
-      renderMap();
+      renderTables();
     }
 
-    function saveReservation() {
-      const name = document.getElementById('input-name').value.trim();
-      const phone = document.getElementById('input-phone').value.trim();
-      const time = document.getElementById('input-time').value;
-      const count = document.getElementById('input-count').value;
-      const date = document.getElementById('input-date').value;
+    function resetForm() {
+      nameInput.value = "";
+      phoneInput.value = "";
+      timeInput.value = "00:00";
+      countInput.value = "4";
+    }
 
-if (!date) {
-  alert("Odaberite datum rezervacije.");
-  return;
-}
+    function validateForm() {
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const date = dateInput.value;
+      const time = timeInput.value;
+      const count = Number(countInput.value);
+      const phoneRegex = /^[0-9+\s()-]{8,20}$/;
 
+      if (!selectedTable) {
+        throw new Error("Odaberite stol.");
+      }
 
-      if (!name || !phone) {
-        alert("Molimo unesite Ime i Prezime te Broj Mobitela.");
+      if (!name || !phone || !date) {
+        throw new Error("Popunite sva obavezna polja.");
+      }
+
+      if (!phoneRegex.test(phone)) {
+        throw new Error("Unesite ispravan broj mobitela.");
+      }
+
+      if (date < getLocalISODate()) {
+        throw new Error("Datum rezervacije ne može biti u prošlosti.");
+      }
+
+      if (!Number.isInteger(count) || count < 1 || count > 6) {
+        throw new Error("Broj osoba mora biti između 1 i 6.");
+      }
+
+      return { name, phone, date, time, count };
+    }
+
+    async function saveReservation() {
+      if (isSaving) {
         return;
       }
 
-      reservedTables.add(selectedTable);
+      isSaving = true;
+      saveButton.disabled = true;
+      saveButton.textContent = "Spremanje...";
 
-if (supabase) {
+      try {
+        const reservation = validateForm();
 
-  supabase
-    .from('reservations')
-    .insert([
-      {
-        table_id: selectedTable,
-        reservation_date: date,
-        reservation_time: time,
-        guest_count: Number(count),
-        name: name,
-        phone: phone
+        const { data: existing, error: checkError } = await supabaseClient
+          .from("reservations")
+          .select("id")
+          .eq("table_id", selectedTable)
+          .eq("reservation_date", reservation.date)
+          .limit(1);
+
+        if (checkError) {
+          throw new Error("Nije moguće provjeriti raspoloživost stola.");
+        }
+
+        if (existing && existing.length > 0) {
+          await loadReservations(reservation.date);
+          throw new Error("Stol je u međuvremenu rezerviran. Odaberite drugi stol.");
+        }
+
+        const tableId = selectedTable;
+        const { error: insertError } = await supabaseClient
+          .from("reservations")
+          .insert([{
+            table_id: tableId,
+            reservation_date: reservation.date,
+            reservation_time: reservation.time,
+            guest_count: reservation.count,
+            name: reservation.name,
+            phone: reservation.phone
+          }]);
+
+        if (insertError) {
+          if (insertError.code === "23505") {
+            await loadReservations(reservation.date);
+            throw new Error("Stol je u međuvremenu rezerviran. Odaberite drugi stol.");
+          }
+          throw new Error("Greška kod spremanja rezervacije.");
+        }
+
+        reservedTables.add(tableId);
+        alert(`Rezervacija je uspješno spremljena za stol #${tableId}.`);
+        resetForm();
+        closeModal();
+        await loadReservations(reservation.date);
+      } catch (error) {
+        console.error(error);
+        alert(error.message || "Došlo je do neočekivane greške.");
+      } finally {
+        isSaving = false;
+        saveButton.disabled = false;
+        saveButton.textContent = "Potvrdi rezervaciju";
       }
-    ])
-    .then((result) => {
-      console.log(result);
-    });
-
-}
-
-
-      alert(`Uspješno potvrdjena rezervacija za Stol #${selectedTable} u ${time}h za ${count} osoba!`);
-      closeModal();
     }
 
     function sendWhatsApp() {
-      const name = document.getElementById('input-name').value.trim();
-      const phone = document.getElementById('input-phone').value.trim();
-      const time = document.getElementById('input-time').value;
-      const count = document.getElementById('input-count').value;
+      try {
+        const reservation = validateForm();
+        const message = `Pozdrav LEVEL Caffe & Night Bar,\n\nZahtjev za rezervaciju:\n\nStol: #${selectedTable}\nDatum: ${reservation.date}\nVrijeme: ${reservation.time}\nBroj osoba: ${reservation.count}\n\nIme i prezime: ${reservation.name}\nMobitel: ${reservation.phone}`;
+        const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+      } catch (error) {
+        alert(error.message || "Popunite podatke za WhatsApp poruku.");
+      }
+    }
 
-      if (!name || !phone) {
-        alert("Molimo unesite Ime i Prezime te Broj Mobitela.");
+    async function loadReservations(date = dateInput.value || getLocalISODate()) {
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .select("table_id")
+        .eq("reservation_date", date);
+
+      if (error) {
+        console.error(error);
+        alert("Nije moguće učitati rezervacije. Pokušajte ponovno.");
+        renderTables();
         return;
       }
 
-      const message = `Pozdrav LEVEL Caffe %26 Night Bar,%0AZahtjev za rezervaciju:%0A- Stol: %23${selectedTable}%0A- Vrijeme: ${time} h%0A- Osoba: ${count}%0A- Ime i Prezime: ${name}%0A- Mob: ${phone}`;
-      window.open(
-  `https://wa.me/385993694369?text=${message}`,
-  '_blank');
+      reservedTables = new Set((data || []).map((row) => Number(row.table_id)));
+
+      if (selectedTable !== null && reservedTables.has(selectedTable)) {
+        closeModal();
+      } else {
+        renderTables();
+      }
     }
 
-    // Pokretanje pri učitavanju
-    async function loadReservations() {
+    function subscribeToReservations() {
+      supabaseClient
+        .channel("reservations-live")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "reservations" },
+          () => loadReservations()
+        )
+        .subscribe((status) => {
+          if (status === "CHANNEL_ERROR") {
+            console.error("Realtime kanal nije dostupan.");
+          }
+        });
+    }
 
-  if (!supabase) return;
+    saveButton.addEventListener("click", saveReservation);
+    cancelButton.addEventListener("click", closeModal);
+    whatsAppButton.addEventListener("click", sendWhatsApp);
 
-  const today = new Date()
-    .toISOString()
-    .split('T')[0];
-
-  const { data, error } = await supabase
-    .from('reservations')
-    .select('*')
-    .eq('reservation_date', today);
-
-  if (error) {
-    console.log(error);
-    return;
-  }
-
-  reservedTables.clear();
-
-  data.forEach(item => {
-    reservedTables.add(item.table_id);
-  });
-
- loadReservations();
-
-}
-
-if (supabase) {
-
-  supabase
-    .channel('reservations-live')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'reservations'
-      },
-      () => {
-        loadReservations();
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        closeModal();
       }
-    )
-    .subscribe();
-}
+    });
 
-loadReservations();
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+        closeModal();
+      }
+    });
 
+    document.addEventListener("DOMContentLoaded", async () => {
+      const today = getLocalISODate();
+      dateInput.min = today;
+      dateInput.value = today;
+      dateInput.addEventListener("change", () => loadReservations(dateInput.value));
+      renderTables();
+      await loadReservations(today);
+      subscribeToReservations();
+    });
   </script>
 </body>
 </html>
