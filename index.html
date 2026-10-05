@@ -24,18 +24,23 @@
   <section class="map">
     <svg viewBox="0 0 540 920" role="img" aria-label="Tlocrt LEVEL bara">
       <rect x="10" y="10" width="520" height="900" rx="12" fill="none" stroke="#30303c" stroke-width="4"/>
-      <rect class="zone" x="20" y="220" width="35" height="355" rx="14"/><text class="zone-text small" x="37" y="397" transform="rotate(-90 37 397)">KAUČ ZA SJEDENJE</text>
-      <rect class="zone" x="20" y="590" width="170" height="28" rx="10"/><text class="zone-text small" x="105" y="604">KAUČ ZA SJEDENJE</text>
-      <rect class="zone" x="20" y="625" width="35" height="100" rx="14"/><text class="zone-text small" x="37" y="675" transform="rotate(-90 37 675)">KAUČ</text>
-      <rect class="zone" x="30" y="130" width="110" height="45" rx="6"/><text class="zone-text" x="85" y="153">DJ PULT</text>
-      <rect class="zone" x="115" y="25" width="38" height="90" rx="5"/><text class="zone-text small" x="134" y="70" transform="rotate(-90 134 70)">KAUČ</text>
-      <rect class="zone" x="320" y="25" width="38" height="90" rx="5"/><text class="zone-text small" x="339" y="70" transform="rotate(-90 339 70)">KAUČ</text>
-      <rect class="zone" x="380" y="30" width="90" height="70" rx="6"/><text class="zone-text" x="425" y="65">WC</text>
-      <rect class="zone" x="195" y="285" width="38" height="255" rx="5"/><text class="zone-text" x="214" y="412" transform="rotate(-90 214 412)">FIXNI PULT</text>
-      <rect class="bar" x="310" y="215" width="60" height="225" rx="6"/><text class="zone-text" x="340" y="327" transform="rotate(-90 340 327)">GORNJI ŠANK</text>
-      <rect class="vip-bg" x="300" y="480" width="160" height="100" rx="8"/><text class="zone-text small" x="395" y="494">KAUČ</text><text class="zone-text small" x="448" y="535" transform="rotate(-90 448 535)">KAUČ</text><text class="zone-text small" x="395" y="569">KAUČ</text>
-      <rect class="bar" x="400" y="600" width="60" height="205" rx="6"/><text class="zone-text" x="430" y="702" transform="rotate(-90 430 702)">DONJI ŠANK</text>
-      <rect class="entry" x="232" y="842" width="76" height="42" rx="4"/><text class="zone-text" x="270" y="863">LEVEL</text>
+      <rect class="zone" x="20" y="230" width="40" height="350" rx="14"/><text class="zone-text small" x="40" y="405" transform="rotate(-90 40 405)">KAUČ ZA SJEDENJE</text>
+      <rect class="zone" x="20" y="590" width="175" height="30" rx="10"/><text class="zone-text small" x="107" y="605">KAUČ ZA SJEDENJE</text>
+      <rect class="zone" x="20" y="625" width="40" height="110" rx="14"/><text class="zone-text small" x="40" y="680" transform="rotate(-90 40 680)">KAUČ</text>
+      <rect class="zone" x="28" y="138" width="118" height="48" rx="6"/><text class="zone-text" x="87" y="162">DJ PULT</text>
+      <path d="M145 140 V35 Q145 25 155 25 H230" fill="none" stroke="#596172" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M145 140 V35 Q145 25 155 25 H230" fill="none" stroke="#202027" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+      <text class="zone-text small" x="180" y="39">LIJEVI SEPARE</text>
+      <path d="M260 25 H335 Q345 25 345 35 V140" fill="none" stroke="#596172" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M260 25 H335 Q345 25 345 35 V140" fill="none" stroke="#202027" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+      <text class="zone-text small" x="310" y="39">DESNI SEPARE</text>
+      <rect class="zone" x="220" y="143" width="50" height="7" rx="2"/>
+      <rect class="zone" x="375" y="30" width="100" height="75" rx="6"/><text class="zone-text" x="425" y="68">WC</text>
+      <rect class="zone" x="195" y="285" width="42" height="265" rx="5"/><text class="zone-text" x="216" y="417" transform="rotate(-90 216 417)">FIXNI PULT</text>
+      <rect class="bar" x="310" y="220" width="62" height="225" rx="6"/><text class="zone-text" x="341" y="332" transform="rotate(-90 341 332)">GORNJI ŠANK</text>
+      <rect class="vip-bg" x="300" y="480" width="165" height="105" rx="8"/><text class="zone-text small" x="395" y="494">KAUČ</text><text class="zone-text small" x="448" y="535" transform="rotate(-90 448 535)">KAUČ</text><text class="zone-text small" x="395" y="569">KAUČ</text>
+      <rect class="bar" x="400" y="610" width="62" height="210" rx="6"/><text class="zone-text" x="431" y="715" transform="rotate(-90 431 715)">DONJI ŠANK</text>
+      <rect class="entry" x="225" y="842" width="90" height="45" rx="4"/><text class="zone-text" x="270" y="865">LEVEL</text>
       <g id="tables"></g>
     </svg>
   </section>
@@ -68,16 +73,17 @@ const VIP_ID=1,VIP_LEGACY_IDS=[1,2,3];
 const zones={1:"Cijela VIP zona",4:"Donji šank",5:"Donji šank",6:"Glavni podij",7:"Glavni podij",8:"Glavni podij",9:"Glavni podij",10:"Glavni podij",11:"Glavni podij",12:"Glavni podij",13:"Kauč za sjedenje",14:"Kauč za sjedenje",15:"Kauč",16:"Kauč za sjedenje",17:"Kauč za sjedenje",18:"Kauč za sjedenje",19:"Kauč za sjedenje",20:"Kauč za sjedenje",21:"Kauč za sjedenje",22:"DJ zona",23:"DJ zona",24:"Fixni pult",25:"Fixni pult",26:"Fixni pult",27:"Fixni pult",28:"Fixni pult",29:"Fixni pult",30:"Fixni pult",31:"Gornji šank",32:"Kauč",33:"Kauč",34:"Kauč",35:"Gornja zona",36:"Kauč",37:"Kauč"};
 const tables={
 1:{x:345,y:505,w:90,h:44,vip:true},
-4:{x:350,y:690,r:10},5:{x:350,y:840,r:10},
-6:{x:220,y:840,r:10},7:{x:145,y:840,r:10},8:{x:70,y:840,r:10},
-9:{x:220,y:770,r:10},10:{x:145,y:770,r:10},11:{x:70,y:770,r:10},
-12:{x:220,y:690,r:10},13:{x:100,y:640,r:10},14:{x:160,y:640,r:10},15:{x:70,y:690,r:10},
-16:{x:75,y:555,r:10},17:{x:75,y:505,r:10},18:{x:75,y:455,r:10},19:{x:75,y:405,r:10},20:{x:75,y:355,r:10},21:{x:75,y:305,r:10},22:{x:75,y:255,r:10},
+4:{x:350,y:610,r:10},
+5:{x:350,y:855,r:10},
+6:{x:205,y:855,r:10},7:{x:130,y:855,r:10},8:{x:55,y:855,r:10},
+9:{x:205,y:800,r:10},10:{x:130,y:800,r:10},11:{x:55,y:800,r:10},
+12:{x:80,y:690,r:10},13:{x:80,y:640,r:10},14:{x:140,y:640,r:10},15:{x:200,y:640,r:10},
+16:{x:80,y:555,r:10},17:{x:80,y:505,r:10},18:{x:80,y:455,r:10},19:{x:80,y:405,r:10},20:{x:80,y:355,r:10},21:{x:80,y:305,r:10},22:{x:80,y:255,r:10},
 23:{x:175,y:255,r:10},24:{x:175,y:305,r:10},25:{x:175,y:355,r:10},26:{x:175,y:405,r:10},27:{x:175,y:455,r:10},28:{x:175,y:505,r:10},29:{x:175,y:555,r:10},
-30:{x:245,y:205,r:10},31:{x:315,y:180,r:10},
-32:{x:300,y:120,r:10},33:{x:300,y:70,r:10},
-34:{x:235,y:70,r:10},35:{x:235,y:120,r:10},
-36:{x:170,y:120,r:10},37:{x:170,y:70,r:10}
+30:{x:315,y:530,r:10},31:{x:245,y:170,r:10},
+32:{x:305,y:115,r:10},33:{x:305,y:70,r:10},
+34:{x:245,y:70,r:10},35:{x:245,y:115,r:10},
+36:{x:185,y:115,r:10},37:{x:185,y:70,r:10}
 };
 const iso=d=>{const x=new Date(d);return new Date(x.getTime()-x.getTimezoneOffset()*60000).toISOString().slice(0,10)};
 const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d,12)};
